@@ -4,7 +4,7 @@ import { Downloads, UserPackages } from "./types";
 
 async function getPackageDownloads(pkg: string): Promise<Downloads> {
   const res = await fetch(
-    `https://api.npmjs.org/downloads/point/last-week/${pkg}`
+    `https://api.npmjs.org/downloads/point/last-year/${pkg}`
   );
   return res.json();
 }
