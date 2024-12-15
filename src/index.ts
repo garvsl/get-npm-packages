@@ -28,7 +28,7 @@ export async function getPackages(
         return {
           id: e.id,
           title: e.name,
-          description: e.description,
+          description: e.description || "",
           version: e.version,
           updated: e.date.rel,
           link: `${CONFIG.BASE_URL}/package/${e.name}`,
@@ -61,5 +61,3 @@ export async function getPackages(
     };
   }
 }
-
-console.log(await getPackages("garvsl"));
