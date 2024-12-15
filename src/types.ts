@@ -12,3 +12,10 @@ export type Package = {
   updated: string;
   link: string;
 };
+
+export type Downloads = {
+  downloads: number;
+  start: string;
+  end: string;
+  package: string;
+};

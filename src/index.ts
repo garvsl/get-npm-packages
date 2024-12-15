@@ -1,6 +1,13 @@
 import { CONFIG } from "./config";
 import { JSDOM } from "jsdom";
-import { UserPackages } from "./types";
+import { Downloads, UserPackages } from "./types";
+
+async function getPackageDownloads(pkg: string): Promise<Downloads> {
+  const res = await fetch(
+    `https://api.npmjs.org/downloads/point/last-week/${pkg}`
+  );
+  return res.json();
+}
 
 export async function getPackages(
   user: string,
@@ -23,19 +30,22 @@ export async function getPackages(
     const scriptObject = JSON.parse(script.slice(script.indexOf("{")));
     let curPackages = scriptObject.context.packages.objects;
 
-    curPackages = curPackages
-      .map((e: any) => {
-        return {
-          id: e.id,
-          title: e.name,
-          description: e.description || "",
-          version: e.version,
-          updated: e.date.rel,
-          link: `${CONFIG.BASE_URL}/package/${e.name}`,
-        };
-      })
-      .reverse()
-      .concat(packages.packages);
+    curPackages = await Promise.all(
+      curPackages
+        .map(async (e: any) => {
+          return {
+            id: e.id,
+            title: e.name,
+            description: e.description || "",
+            version: e.version,
+            updated: e.date.rel,
+            downloads: (await getPackageDownloads(e.name)).downloads || 0,
+            link: `${CONFIG.BASE_URL}/package/${e.name}`,
+          };
+        })
+        .reverse()
+        .concat(packages.packages)
+    );
 
     const paginate = dom.window.document.querySelector(
       `a[href='?page=${page + 1}']`
@@ -61,3 +71,5 @@ export async function getPackages(
     };
   }
 }
+
+console.log(await getPackages("garvsl"));
